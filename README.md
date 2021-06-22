@@ -1,8 +1,25 @@
 # Here's a challenge for you: Can you create a script that can beat this hangman API?
 
-The API is very simple: To start a new game of hangman, simply visit https://hangman.timothyoesch.ch/new
+**The challenge is as follows: The API will choose a random word for you. It is your job to create a script that can find the correct word as often as possible. There will be a leader board with the best algorithms soon!**
 
-This will provide you with a response that looks something like this:
+
+
+## Create a new Game
+
+**To create a new game, you must perform a POST Request to this base URL: https://hangman.timothyoesch.ch/new/**
+
+You must provide a "userkey": To receive such a key, please [write me an email](mailto:timothy@kpunkt.ch). The userkey is used to monitor win/loss statistics. Once the challenge has taken off, these statistics will be published. Make sure to send your userkey as JSON and therefore set the content-type to "application/json".
+
+This is an example to create a new game with the Userkey "1234567890" (using cURL):
+
+```cURL
+curl "http://hangman.localhost/new/" \
+  -X POST \
+  -d "{\r\n  \"userkey\":\"1234567890\"\r\n}" \
+  -H "content-type: application/json" 
+```
+
+This request will provide you with a response that looks something like this:
 
 ```json
 {
@@ -14,13 +31,15 @@ This will provide you with a response that looks something like this:
 }
 ```
 
-The API has selected a word randomly from over 37'000 English words. The "game_ID" is what you will need to play the game. The "clue" is what you can give to your script. To see the game stats, simply visit the URL that is provided to you.
+The API has selected a word randomly from over 280'000 English words. The "game_ID" is what you will need to play the game. The "clue" is what you can give to your script. To see the game stats, simply visit the URL that is provided to you.
 
 
 
 ## Guess a letter
 
-To guess a letter, perform a POST Request to this base URL https://hangman.timothyoesch.ch/play/?id=XXGAME_IDXX&type=letter. Make sure to replace XXGAME_IDXX with the game_ID that was provided to you. Also make sure to send your guess as JSON and therefore set the content-type to application/json. You will have to provide a "userkey": To receive such a key, please [write me an email](mailto:timothy@kpunkt.ch). The userkey is used to monitor win/loss statistics. Once the challenge has taken off, these statistics will be published. 
+**To guess a letter, perform a POST Request to this base URL: https://hangman.timothyoesch.ch/play/?id=XXGAME_IDXX&type=letter.** 
+
+Make sure to replace XXGAME_IDXX with the game_ID that was provided to you. Also make sure to send your guess as JSON and therefore set the content-type to "application/json". You will have to provide the same "userkey" that was used to create the game. 
 
 If you want to guess the letter "a" for example, the request should look somethink like this (using cURL):
 
@@ -52,7 +71,9 @@ The response will look something like this:
 
 ## Guess a word
 
-If you feel comfortable to guess a word, make a POST Request to this base URL https://hangman.timothyoesch.ch/play/?id=XXGAME_IDXX&type=word. Make sure to replace XXGAME_IDXX with the game_ID that was provided to you. Also make sure to send your guess as JSON and therefore set the content-type to application/json. You will have to provide the same "userkey" here as you did when guessing a letter. If you want to guess the word "socialism" for example, the request should look somethink like this (using cURL):
+**If you feel comfortable to guess a word, make a POST Request to this base URL https://hangman.timothyoesch.ch/play/?id=XXGAME_IDXX&type=word.** 
+
+Make sure to replace XXGAME_IDXX with the game_ID that was provided to you. Also make sure to send your guess as JSON and therefore set the content-type to "application/json". You will have to provide the same "userkey" here as you did when guessing a letter. If you want to guess the word "socialism" for example, the request should look somethink like this (using cURL):
 
 ```cURL
 curl "https://hangman.timothyoesch.ch/play/?id=game_60d1f1eac7d83&type=word" \

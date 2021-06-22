@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 22. Jun 2021 um 16:27
+-- Erstellungszeit: 22. Jun 2021 um 19:31
 -- Server-Version: 10.4.17-MariaDB
 -- PHP-Version: 7.3.27
 
@@ -35,7 +35,22 @@ CREATE TABLE `games` (
   `game_clue` varchar(255) NOT NULL,
   `game_state` int(11) NOT NULL,
   `game_strikes` int(11) NOT NULL,
-  `game_guessed` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`game_guessed`))
+  `game_guessed` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`game_guessed`)),
+  `game_user` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `players`
+--
+
+CREATE TABLE `players` (
+  `player_ID` int(11) NOT NULL,
+  `player_UUID` varchar(255) NOT NULL,
+  `player_name` varchar(255) NOT NULL,
+  `player_wins` int(11) NOT NULL,
+  `player_losses` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -50,6 +65,13 @@ ALTER TABLE `games`
   ADD UNIQUE KEY `game_UUID` (`game_UUID`);
 
 --
+-- Indizes für die Tabelle `players`
+--
+ALTER TABLE `players`
+  ADD PRIMARY KEY (`player_ID`),
+  ADD UNIQUE KEY `player_UUID` (`player_UUID`);
+
+--
 -- AUTO_INCREMENT für exportierte Tabellen
 --
 
@@ -58,6 +80,12 @@ ALTER TABLE `games`
 --
 ALTER TABLE `games`
   MODIFY `game_ID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT für Tabelle `players`
+--
+ALTER TABLE `players`
+  MODIFY `player_ID` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

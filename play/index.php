@@ -119,6 +119,14 @@ if ($_GET["type"] == "letter") {
     }
     $letter = $data->letter;
     $userkey = $data->userkey;
+    if ($userkey != $gamestats["game_user"]) {
+        $return = array(
+            "status" => 400,
+            "msg" => "This is not your game. Please use a game you created or create a new one!",
+        );
+        echo(json_encode($return));
+        exit;
+    };
     $clue = $gamestats["game_clue"];
     $uuid = $gamestats["game_UUID"];
     $guessed = json_decode($gamestats["game_guessed"], TRUE);
@@ -223,6 +231,14 @@ if ($_GET["type"] == "word") {
     }
     $userkey = $data->userkey;
     $guess = $data->word;
+    if ($userkey != $gamestats["game_user"]) {
+        $return = array(
+            "status" => 400,
+            "msg" => "This is not your game. Please use a game you created or create a new one!",
+        );
+        echo(json_encode($return));
+        exit;
+    };
 
     $uuid = $gamestats["game_UUID"];
 

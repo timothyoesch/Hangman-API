@@ -1,5 +1,18 @@
 <?php
 require_once(__DIR__ . "/../config/config.php");
+header("Content-type:application/json");
+
+$data = json_decode(file_get_contents('php://input'));
+if (!property_exists($data, "userkey")) {
+    $return = array(
+        "status" => 400,
+        "msg" => "You did not provide a userkey. If you don't have one, please contact timothy@kpunkt.ch",
+    );
+    echo(json_encode($return));
+    exit;
+}
+$userkey = $data->userkey;
+
 
 $words = file(__DIR__ . "/../config/words.txt");
 
@@ -17,9 +30,9 @@ $state = 0;
 $strikes = 0;
 $guessed = json_encode(array());
 
-$sql = "INSERT into `games` (`game_UUID`, `game_word`, `game_clue`, `game_state`, `game_strikes`, `game_guessed`) VALUES (?,?,?,?,?,?) ON DUPLICATE KEY UPDATE `game_UUID` = `game_UUID`;";
+$sql = "INSERT into `games` (`game_UUID`, `game_word`, `game_clue`, `game_state`, `game_strikes`, `game_guessed`, `game_user`) VALUES (?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE `game_UUID` = `game_UUID`;";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("ssssss", $uuid, $randomword, $clue, $state, $strikes,$guessed);
+$stmt->bind_param("sssssss", $uuid, $randomword, $clue, $state, $strikes,$guessed,$userkey);
 $result = $stmt->execute();
 
 if($result == 1) {
@@ -40,7 +53,6 @@ if($result == 1) {
     );
 }
 
-header("Content-type:application/json");
 echo(json_encode($return));
 
 ?>
