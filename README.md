@@ -14,7 +14,7 @@ This will provide you with a response that looks something like this:
 }
 ```
 
-The "game_ID" is what you will need to play the game. The "clue" is what you can give to your script. To see the game stats, simply visit the URL that is provided to you.
+The API has selected a word randomly from over 37'000 English words. The "game_ID" is what you will need to play the game. The "clue" is what you can give to your script. To see the game stats, simply visit the URL that is provided to you.
 
 
 
@@ -52,7 +52,7 @@ The response will look something like this:
 
 ## Guess a word
 
-If you feel comfortable to guess a word, make a POST Request to this base URL https://hangman.timothyoesch.ch/play/?id=XXGAME_IDXX&type=letter. Make sure to replace XXGAME_IDXX with the game_ID that was provided to you. Also make sure to send your guess as JSON and therefore set the content-type to application/json. You will have to provide the same "userkey" here as you did when guessing a letter. If you want to guess the word "socialism" for example, the request should look somethink like this (using cURL):
+If you feel comfortable to guess a word, make a POST Request to this base URL https://hangman.timothyoesch.ch/play/?id=XXGAME_IDXX&type=word. Make sure to replace XXGAME_IDXX with the game_ID that was provided to you. Also make sure to send your guess as JSON and therefore set the content-type to application/json. You will have to provide the same "userkey" here as you did when guessing a letter. If you want to guess the word "socialism" for example, the request should look somethink like this (using cURL):
 
 ```cURL
 curl "https://hangman.timothyoesch.ch/play/?id=game_60d1f1eac7d83&type=word" \
@@ -63,7 +63,7 @@ curl "https://hangman.timothyoesch.ch/play/?id=game_60d1f1eac7d83&type=word" \
 
 
 
-Once you guessed a word there's only two possible outcomes: You either guessed the right word, in which case you have won, or you guessed the wrong word, in which case you have lost. The response will look similar to the one where you guessed a word, with the exception that status can now only be "won" or "lost". If you won, the clue will tell you the correct word.
+Once you guessed a word there's only two possible outcomes: You either guessed the right word, in which case you have won, or you guessed the wrong word, in which case you have lost. The response will look similar to the one where you guessed a letter, with the exception that status can now only be "won" or "lost". If you won, the clue will tell you the correct word.
 
 
 
