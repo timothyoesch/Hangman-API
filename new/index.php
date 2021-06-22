@@ -26,7 +26,7 @@ if($result == 1) {
     $return = array(
         "status" => 201,
         "msg" => "{$uuid} successfully created!",
-        "game ID" => $uuid,
+        "game_ID" => $uuid,
         "url" => (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . "/play/?id={$uuid}",
         "clue" => $clue
     );
@@ -34,7 +34,7 @@ if($result == 1) {
     $return = array(
         "status" => 500,
         "msg" => "{$uuid} could not be created!",
-        "game ID" => $uuid,
+        "game_ID" => $uuid,
         "url" => "",
         "clue" => ""
     );

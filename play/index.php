@@ -2,6 +2,53 @@
 require_once(__DIR__ . "/../config/config.php");
 header("Content-type:application/json");
 
+function playerLost($userkey, $conn) {
+    $sql = "SELECT * from `players` WHERE `player_UUID`= ?;";
+    $stmt = $conn->prepare($sql);
+    $stmt-> bind_param("s", $userkey);
+    $stmt->execute();
+    $playerstats = $stmt->get_result()->fetch_assoc();
+
+    if (!$playerstats) {
+        $sql = "INSERT into `players` (`player_UUID`, `player_wins`, `player_losses`) VALUES (?,?,?);";
+        $stmt = $conn->prepare($sql);
+        $losses = 1;
+        $wins = 0;
+        $stmt->bind_param("sss", $userkey, $wins, $losses);
+        $stmt->execute();
+    } else {
+        $sql = "UPDATE `players` SET `player_losses`=? WHERE `player_UUID`=?;";
+        $stmt = $conn->prepare($sql);
+        $losses = $playerstats["player_losses"] + 1;
+        $stmt->bind_param("ss", $losses, $userkey);
+        $stmt->execute();
+    }
+}
+
+function playerWon($userkey, $conn) {
+    $sql = "SELECT * from `players` WHERE `player_UUID`= ?;";
+    $stmt = $conn->prepare($sql);
+    $stmt-> bind_param("s", $userkey);
+    $stmt->execute();
+    $playerstats = $stmt->get_result()->fetch_assoc();
+
+    if (!$playerstats) {
+        $sql = "INSERT into `players` (`player_UUID`, `player_wins`, `player_losses`) VALUES (?,?,?);";
+        $stmt = $conn->prepare($sql);
+        $losses = 0;
+        $wins = 1;
+        $stmt->bind_param("sss", $userkey, $wins, $losses);
+        $stmt->execute();
+    } else {
+        $sql = "UPDATE `players` SET `player_wins`=? WHERE `player_UUID`=?;";
+        $stmt = $conn->prepare($sql);
+        $wins = $playerstats["player_wins"] + 1;
+        $stmt->bind_param("ss", $wins, $userkey);
+        $stmt->execute();
+    }
+}
+
+
 if(!isset($_GET["id"])) {
     $return = array(
         "status" => 404,
@@ -62,7 +109,16 @@ if ($_GET["type"] == "letter") {
         echo(json_encode($return));
         exit;
     }
+    if (!property_exists($data, "userkey")) {
+        $return = array(
+            "status" => 400,
+            "msg" => "You did not provide a userkey. If you don't have one, please contact timothy@kpunkt.ch",
+        );
+        echo(json_encode($return));
+        exit;
+    }
     $letter = $data->letter;
+    $userkey = $data->userkey;
     $clue = $gamestats["game_clue"];
     $uuid = $gamestats["game_UUID"];
     $guessed = json_decode($gamestats["game_guessed"], TRUE);
@@ -81,12 +137,13 @@ if ($_GET["type"] == "letter") {
         $stmt->bind_param("ss", $strikes, $uuid);
         $result = $stmt->execute();
         if ($result == 1) {
-            if ($strikes >= 5) {
+            if ($strikes > 5) {
                 $state = 2;
                 $sql = "UPDATE `games` SET `game_state` = ? WHERE `game_UUID`= ?;";
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param("ss", $state, $uuid);
                 $result = $stmt->execute();
+                playerLost($userkey, $conn);
                 $return = array(
                     "status" => "lost",
                     "msg" => "You lost the game!",
@@ -156,6 +213,15 @@ if ($_GET["type"] == "word") {
         echo(json_encode($return));
         exit;
     }
+    if (!property_exists($data, "userkey")) {
+        $return = array(
+            "status" => 400,
+            "msg" => "You did not provide a userkey. If you don't have one, please contact timothy@kpunkt.ch",
+        );
+        echo(json_encode($return));
+        exit;
+    }
+    $userkey = $data->userkey;
     $guess = $data->word;
 
     $uuid = $gamestats["game_UUID"];
@@ -166,6 +232,7 @@ if ($_GET["type"] == "word") {
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ss", $state, $uuid);
         $result = $stmt->execute();
+        playerWon($userkey, $conn);
         $return = array(
             "status" => "won",
             "msg" => "You won the game!",
@@ -182,6 +249,7 @@ if ($_GET["type"] == "word") {
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ss", $state, $uuid);
         $result = $stmt->execute();
+        playerLost($userkey, $conn);
         $return = array(
             "status" => "lost",
             "msg" => "You lost the game!",
