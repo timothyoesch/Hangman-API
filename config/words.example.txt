@@ -1,0 +1,12 @@
+tree
+house
+put
+words
+here
+that
+should
+be
+used
+as
+a
+dictionary
